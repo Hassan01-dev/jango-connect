@@ -1,4 +1,4 @@
-import { Response } from 'express'
+import { Response } from "express";
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../models/User'
@@ -9,6 +9,7 @@ import {
   AuthenticatedRequest
 } from '../utils/types/controllers/auth.controller.types'
 
+// Promise<Response<any, Record<string, any>> | any>
 const createUser = async (req: CreateUserType, res: Response) => {
   const { firstName, lastName, username, email, password } = req.body
 

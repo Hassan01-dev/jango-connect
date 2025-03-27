@@ -1,4 +1,4 @@
-import { Response, NextFunction } from 'express'
+import { Response, NextFunction } from "express";
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { AuthenticatedRequest } from '../utils/types/controllers/auth.controller.types'
 
