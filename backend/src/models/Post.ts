@@ -11,7 +11,7 @@ const PostSchema = new Schema<PostModelType>(
       unique: true
     },
     user_id: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'User ID is required']
     },

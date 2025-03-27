@@ -7,7 +7,7 @@ import {
   CreateUserType,
   LoginRequestType,
   AuthenticatedRequest
-} from '../utils/types/controllers/auth.types'
+} from '../utils/types/controllers/auth.controller.types'
 
 const createUser = async (req: CreateUserType, res: Response) => {
   const { firstName, lastName, username, email, password } = req.body

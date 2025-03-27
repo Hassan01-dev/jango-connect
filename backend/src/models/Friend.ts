@@ -1,23 +1,23 @@
 import mongoose from 'mongoose'
 import FriendModelType from '../utils/types/models/friends'
 
-const { Schema, model, Types } = mongoose
+const { Schema, model } = mongoose
 
 const FriendsSchema = new Schema<FriendModelType>(
   {
     user_1: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       required: true
     },
     user_2: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       required: true
     },
     status: {
       type: String,
-      enum: ['pending', 'accepted', 'blocked'],
+      enum: ['pending', 'accepted', 'rejected', 'blocked'],
       default: 'pending'
     }
   },
