@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import UserModelType from '../utils/types/models/users'
+import { UserModelType } from '../utils/types/users.types'
 
 const { Schema, model, Types } = mongoose
 

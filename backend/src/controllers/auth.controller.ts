@@ -1,13 +1,13 @@
-import { Response } from "express";
+import { Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../models/User'
-import UserModelType from '../utils/types/models/users'
+import { UserModelType } from '../utils/types/users.types'
 import {
   CreateUserType,
   LoginRequestType,
   AuthenticatedRequest
-} from '../utils/types/controllers/auth.controller.types'
+} from '../utils/types/users.types'
 
 // Promise<Response<any, Record<string, any>> | any>
 const createUser = async (req: CreateUserType, res: Response) => {
@@ -45,10 +45,12 @@ const createUser = async (req: CreateUserType, res: Response) => {
       user: { uuid: user.id, firstName, lastName, username, email },
       token
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
     return res
       .status(500)
-      .json({ message: 'Server Error', error: error.message })
+      .json({ message: 'Server Error', error: errorMessage })
   }
 }
 
@@ -89,10 +91,12 @@ const login = async (req: LoginRequestType, res: Response) => {
         email: user.email
       }
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
     return res
       .status(500)
-      .json({ message: 'Server Error', error: error.message })
+      .json({ message: 'Server Error', error: errorMessage })
   }
 }
 
@@ -100,10 +104,12 @@ const currentUser = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const user = await User.findById(req.userId).select('-__v -password')
     return res.status(200).json(user)
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
     return res
       .status(500)
-      .json({ message: 'Server Error', error: error.message })
+      .json({ message: 'Server Error', error: errorMessage })
   }
 }
 

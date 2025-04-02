@@ -5,6 +5,7 @@
   "main": "src/server.ts",
   "author": "Hassan Raza (Jango)",
   "license": "ISC",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "prod": "NODE_ENV=production npm run build:start",

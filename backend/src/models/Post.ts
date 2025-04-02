@@ -1,15 +1,10 @@
 import mongoose from 'mongoose'
-import PostModelType from '../utils/types/models/posts'
+import { PostModelType } from '../utils/types/posts.types'
 
-const { Schema, model, Types } = mongoose
+const { Schema, model } = mongoose
 
 const PostSchema = new Schema<PostModelType>(
   {
-    uuid: {
-      type: String,
-      required: [true, 'UUID is required'],
-      unique: true
-    },
     user_id: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -30,18 +25,8 @@ const PostSchema = new Schema<PostModelType>(
         ]
       }
     ],
-    likes: [
-      {
-        type: Types.ObjectId,
-        ref: 'Like'
-      }
-    ],
-    comments: [
-      {
-        type: Types.ObjectId,
-        ref: 'Comment'
-      }
-    ]
+    likes_count: { type: Number, default: 0 },
+    comments_count: { type: Number, default: 0 }
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )

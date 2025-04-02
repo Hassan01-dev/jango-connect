@@ -1,5 +1,6 @@
 import mongoose, { Document } from 'mongoose'
-import { Request } from 'express'
+import { Request } from "express";
+import { TypedRequestBody } from "./base.types"
 
 type UserAttributes = {
   username: string
@@ -12,12 +13,13 @@ type UserAttributes = {
   friends: mongoose.Types.ObjectId[]
 }
 
-export default interface UserModelType extends UserAttributes, Document {}
+export interface UserModelType extends UserAttributes, Document {}
 
-export type CreateUserType = Request<
-  {},
-  {},
-  {
+export interface AuthenticatedRequest extends Request {
+  userId?: string
+}
+
+export type CreateUserType = TypedRequestBody<{
     firstName: string
     lastName: string
     username: string
@@ -26,9 +28,7 @@ export type CreateUserType = Request<
   }
 >
 
-export type LoginRequestType = Request<
-  {},
-  {},
+export type LoginRequestType = TypedRequestBody<
   {
     identifier: string
     password: string

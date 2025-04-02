@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import FriendModelType from '../utils/types/models/friends'
+import { FriendModelType } from '../utils/types/friends.types'
 
 const { Schema, model } = mongoose
 
@@ -17,7 +17,7 @@ const FriendsSchema = new Schema<FriendModelType>(
     },
     status: {
       type: String,
-      enum: ['pending', 'accepted', 'rejected', 'blocked'],
+      enum: ['pending', 'accepted', 'rejected'],
       default: 'pending'
     }
   },

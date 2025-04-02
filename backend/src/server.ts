@@ -4,6 +4,7 @@ import "./config/loadEnvironment";
 import connectDB from "./config/dbConfig";
 import authRoutes from "./routes/auth.routes";
 import friendsRoutes from "./routes/friends.routes";
+import postsRoutes from "./routes/posts.routes";
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -15,6 +16,7 @@ app.use(cors());
 
 app.use("/api/", authRoutes);
 app.use("/api/friends/", friendsRoutes);
+app.use("/api/posts/", postsRoutes);
 
 app.get("/", (_, res) => {
   res.send("Server is running...");

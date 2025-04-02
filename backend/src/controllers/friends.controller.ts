@@ -1,11 +1,10 @@
 import { Response } from 'express'
 import Friend from '../models/Friend'
-import FriendModelType from '../utils/types/models/friends'
+import { FriendModelType } from '../utils/types/friends.types'
 import {
   SendFriendRequestType,
-  UpdateFriendRequestType,
-  BlockFriendRequestType
-} from '../utils/types/controllers/friends.controller.types'
+  UpdateFriendRequestType
+} from '../utils/types/friends.types'
 
 const sendFriendRequest = async (req: SendFriendRequestType, res: Response) => {
   const { userId } = req.body
@@ -36,10 +35,12 @@ const sendFriendRequest = async (req: SendFriendRequestType, res: Response) => {
     const friendRequest = new Friend({ user_1: currentUserid, user_2: userId })
     await friendRequest.save()
     return res.status(200).json({ message: 'Friend Request sent' })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
     return res
       .status(500)
-      .json({ message: 'Server Error', error: error.message })
+      .json({ message: 'Server Error', error: errorMessage })
   }
 }
 
@@ -68,10 +69,12 @@ const approveFriendRequest = async (
     return res
       .status(200)
       .json({ message: 'Friend Request Accepted Successfully' })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
     return res
       .status(500)
-      .json({ message: 'Server Error', error: error.message })
+      .json({ message: 'Server Error', error: errorMessage })
   }
 }
 
@@ -100,57 +103,17 @@ const rejectedFriendRequest = async (
     return res
       .status(200)
       .json({ message: 'Friend Request Rejected Successfully' })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
     return res
       .status(500)
-      .json({ message: 'Server Error', error: error.message })
-  }
-}
-
-const blockFriend = async (req: BlockFriendRequestType, res: Response) => {
-  const { userId } = req.body
-  const currentUserid = req.userId
-
-  if (!userId) {
-    return res.status(400).json({ message: 'Missing required fields' })
-  }
-
-  if (userId == currentUserid) {
-    return res
-      .status(400)
-      .json({ message: 'Invalid Request: You can not block yourself' })
-  }
-
-  try {
-    let existingRequest = (await Friend.findOneAndUpdate(
-      {
-        $or: [
-          { user_1: currentUserid, user_2: userId },
-          { user_1: userId, user_2: currentUserid }
-        ]
-      },
-      { status: 'blocked' },
-      { new: true }
-    )) as FriendModelType | null
-
-    if (!existingRequest) {
-      return res.status(400).json({
-        message:
-          "You can't block the user who didn't send you request or not your friend"
-      })
-    }
-
-    return res.status(200).json({ message: 'Friend Blocked Successfully' })
-  } catch (error: any) {
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: error.message })
+      .json({ message: 'Server Error', error: errorMessage })
   }
 }
 
 export default {
   sendFriendRequest,
   approveFriendRequest,
-  rejectedFriendRequest,
-  blockFriend
+  rejectedFriendRequest
 }

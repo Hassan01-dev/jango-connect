@@ -1,6 +1,6 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
-import { AuthenticatedRequest } from '../utils/types/controllers/auth.controller.types'
+import { AuthenticatedRequest } from '../utils/types/users.types'
 
 const verifyToken = (
   req: AuthenticatedRequest,
@@ -20,8 +20,12 @@ const verifyToken = (
     const decodedData = jwt.verify(token, secret_key) as JwtPayload
     req.userId = decodedData.userId
     next()
-  } catch (error: any) {
-    res.status(401).json({ message: 'Invalid token', error: error.message })
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    return res
+      .status(500)
+      .json({ message: 'Server Error', error: errorMessage })
   }
 }
 
