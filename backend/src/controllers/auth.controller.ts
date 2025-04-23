@@ -1,4 +1,4 @@
-import { Response } from 'express'
+import { NextFunction, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../models/User'
@@ -10,7 +10,11 @@ import {
 } from '../utils/types/users.types'
 
 // Promise<Response<any, Record<string, any>> | any>
-const createUser = async (req: CreateUserType, res: Response) => {
+const createUser = async (
+  req: CreateUserType,
+  res: Response,
+  next: NextFunction
+) => {
   const { firstName, lastName, username, email, password } = req.body
 
   if (!firstName || !lastName || !username || !email || !password) {
@@ -45,16 +49,16 @@ const createUser = async (req: CreateUserType, res: Response) => {
       user: { uuid: user.id, firstName, lastName, username, email },
       token
     })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
-const login = async (req: LoginRequestType, res: Response) => {
+const login = async (
+  req: LoginRequestType,
+  res: Response,
+  next: NextFunction
+) => {
   const { identifier, password } = req.body
 
   if (!identifier || !password) {
@@ -91,25 +95,21 @@ const login = async (req: LoginRequestType, res: Response) => {
         email: user.email
       }
     })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
-const currentUser = async (req: AuthenticatedRequest, res: Response) => {
+const currentUser = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const user = await User.findById(req.userId).select('-__v -password')
     return res.status(200).json(user)
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 

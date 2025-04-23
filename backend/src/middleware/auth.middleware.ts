@@ -20,12 +20,8 @@ const verifyToken = (
     const decodedData = jwt.verify(token, secret_key) as JwtPayload
     req.userId = decodedData.userId
     next()
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 

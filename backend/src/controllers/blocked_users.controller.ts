@@ -1,9 +1,9 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import Block from '../models/BlockedUser'
 
 // Block a User
-const blockUser = async (req: Request, res: Response) => {
-  const { userId } = req // Extracted from JWT
+const blockUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req
   const { blockedUserId } = req.body
 
   if (!blockedUserId) {
@@ -22,17 +22,13 @@ const blockUser = async (req: Request, res: Response) => {
     const block = new Block({ blocker: userId, blocked: blockedUserId })
     await block.save()
     return res.status(200).json({ message: 'User blocked successfully' })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
 // Unblock a User
-const unblockUser = async (req: Request, res: Response) => {
+const unblockUser = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req
   const { blockedUserId } = req.body
 
@@ -43,17 +39,17 @@ const unblockUser = async (req: Request, res: Response) => {
   try {
     await Block.findOneAndDelete({ blocker: userId, blocked: blockedUserId })
     return res.status(200).json({ message: 'User unblocked successfully' })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
 // Get Blocked Users
-const getBlockedUsers = async (req: Request, res: Response) => {
+const getBlockedUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { userId } = req
 
   try {
@@ -62,12 +58,8 @@ const getBlockedUsers = async (req: Request, res: Response) => {
       'name email'
     )
     return res.status(200).json({ blockedUsers })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 

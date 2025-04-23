@@ -1,9 +1,13 @@
-import { Response } from 'express'
+import { NextFunction, Response } from 'express'
 import Post from '../models/Post'
 import { PostModelType } from '../utils/types/posts.types'
 import { GetPostType, CreatePostType } from '../utils/types/posts.types'
 
-const createPost = async (req: CreatePostType, res: Response) => {
+const createPost = async (
+  req: CreatePostType,
+  res: Response,
+  next: NextFunction
+) => {
   const currentUserid = req.userId
   const { content } = req.body
 
@@ -18,16 +22,12 @@ const createPost = async (req: CreatePostType, res: Response) => {
       message: 'Post Created Sucessfully',
       post: { uuid: post.id, content }
     })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
-const getPost = async (req: GetPostType, res: Response) => {
+const getPost = async (req: GetPostType, res: Response, next: NextFunction) => {
   const { post_id } = req.params
 
   if (!post_id) {
@@ -48,16 +48,16 @@ const getPost = async (req: GetPostType, res: Response) => {
       })
     } else {
     }
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
-const updatePost = async (req: CreatePostType, res: Response) => {
+const updatePost = async (
+  req: CreatePostType,
+  res: Response,
+  next: NextFunction
+) => {
   const { post_id } = req.params
   const { content } = req.body
   const currentUserid = req.userId
@@ -83,16 +83,16 @@ const updatePost = async (req: CreatePostType, res: Response) => {
       message: 'Post updated successfully',
       post: { uuid: post.id, content: post.content }
     })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
-const deletePost = async (req: GetPostType, res: Response) => {
+const deletePost = async (
+  req: GetPostType,
+  res: Response,
+  next: NextFunction
+) => {
   const { post_id } = req.params
   const currentUserid = req.userId
 
@@ -113,12 +113,8 @@ const deletePost = async (req: GetPostType, res: Response) => {
     await Post.deleteOne({ _id: post_id })
 
     return res.status(200).json({ message: 'Post deleted successfully' })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 

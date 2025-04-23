@@ -1,8 +1,12 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import Notification from '../models/Notification'
 
 // Get Notifications for a User (Paginated)
-const getNotifications = async (req: Request, res: Response) => {
+const getNotifications = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { userId } = req // Assume extracted from JWT
   const { page = 1 } = req.query
   const limit = 10
@@ -14,28 +18,20 @@ const getNotifications = async (req: Request, res: Response) => {
       .skip((Number(page) - 1) * limit)
 
     return res.status(200).json({ notifications })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
 // Mark Notification as Read
-const markAsRead = async (req: Request, res: Response) => {
+const markAsRead = async (req: Request, res: Response, next: NextFunction) => {
   const { notificationId } = req.params
 
   try {
     await Notification.findByIdAndUpdate(notificationId, { read: true })
     return res.status(200).json({ message: 'Notification marked as read' })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
@@ -58,12 +54,8 @@ const createNotification = async (
       message
     })
     await notification.save()
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 

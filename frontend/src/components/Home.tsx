@@ -1,23 +1,20 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../store/authSlice';
-import { RootState, AppDispatch } from '../store';
+import FriendSection from './friends/FriendSection';
+import Posts from './Posts';
+import Chat from './Chat';
+import Navbar from './Navbar';
 
 const Home = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth);
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
-
   return (
-    <div>
-      <h2>Home Page</h2>
-      <p>Welcome, {user?.firstName} {user?.lastName}!</p>
-      <p>Username: {user?.username}</p>
-      <p>This is a protected page that is only accessible after login.</p>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
+    <>
+      <Navbar />
+      <div className='grid grid-cols-4 gap-4'>
+        <FriendSection />
+        <div className='col-span-2'>
+          <Posts />
+        </div>
+        <Chat />
+      </div>
+    </>
   );
 };
 

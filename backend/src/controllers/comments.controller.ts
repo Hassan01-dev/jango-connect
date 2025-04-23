@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import Comment from '../models/Comment'
 import Post from '../models/Post'
 import {
@@ -7,7 +7,11 @@ import {
   DeleteCommentType
 } from '../utils/types/comments.types'
 
-const createComment = async (req: CreateCommentType, res: Response) => {
+const createComment = async (
+  req: CreateCommentType,
+  res: Response,
+  next: NextFunction
+) => {
   const { post_id, content } = req.body
   const user_id = req.userId
 
@@ -30,16 +34,16 @@ const createComment = async (req: CreateCommentType, res: Response) => {
     return res
       .status(201)
       .json({ message: 'Comment added successfully', comment })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
-const editComment = async (req: UpdateCommentType, res: Response) => {
+const editComment = async (
+  req: UpdateCommentType,
+  res: Response,
+  next: NextFunction
+) => {
   const { comment_id, content } = req.body
   const user_id = req.userId
 
@@ -63,16 +67,16 @@ const editComment = async (req: UpdateCommentType, res: Response) => {
     return res
       .status(200)
       .json({ message: 'Comment updated successfully', comment })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
-const deleteComment = async (req: DeleteCommentType, res: Response) => {
+const deleteComment = async (
+  req: DeleteCommentType,
+  res: Response,
+  next: NextFunction
+) => {
   const { comment_id } = req.params
   const user_id = req.userId
 
@@ -98,16 +102,16 @@ const deleteComment = async (req: DeleteCommentType, res: Response) => {
     await comment.deleteOne()
 
     return res.status(200).json({ message: 'Comment deleted successfully' })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
-const getCommentsByPost = async (req: Request, res: Response) => {
+const getCommentsByPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { post_id } = req.params
   const page = parseInt(req.query.page as string) || 1
   const limit = 10
@@ -134,12 +138,8 @@ const getCommentsByPost = async (req: Request, res: Response) => {
         total_comments
       }
     })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 

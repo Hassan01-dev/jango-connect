@@ -1,9 +1,9 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import Like from '../models/Like'
 import Post from '../models/Post'
 import Comment from '../models/Comment'
 
-const toggleLike = async (req: Request, res: Response) => {
+const toggleLike = async (req: Request, res: Response, next: NextFunction) => {
   const { source_id, source_type } = req.body
   const user_id = req.userId
 
@@ -43,16 +43,16 @@ const toggleLike = async (req: Request, res: Response) => {
 
       return res.status(201).json({ message: 'Liked successfully', like })
     }
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
-const getLikesBySource = async (req: Request, res: Response) => {
+const getLikesBySource = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { source_id, source_type } = req.params
   const page = parseInt(req.query.page as string) || 1
   const limit = 10
@@ -79,12 +79,8 @@ const getLikesBySource = async (req: Request, res: Response) => {
         total_likes
       }
     })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 

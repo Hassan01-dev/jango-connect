@@ -1,7 +1,12 @@
 import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
 import { UserModelType } from '../utils/types/users.types'
 
 const { Schema, model, Types } = mongoose
+
+const PASSWORD_PATTERN = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,}$/
+const PASSWORD_ERROR_MESSAGE =
+  'Password must include at least one uppercase letter, one lowercase letter, and one number.'
 
 const UserSchema = new Schema<UserModelType>(
   {
@@ -47,10 +52,9 @@ const UserSchema = new Schema<UserModelType>(
       minlength: [6, 'Password must be at least 6 characters long'],
       validate: {
         validator: function (value: string) {
-          return /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(value)
+          return PASSWORD_PATTERN.test(value)
         },
-        message:
-          'Password must include at least one uppercase letter, one lowercase letter, and one number.'
+        message: PASSWORD_ERROR_MESSAGE
       }
     },
     profileImage: { type: String, default: '' },
@@ -63,6 +67,39 @@ const UserSchema = new Schema<UserModelType>(
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )
+
+// Pre-save hook to validate and hash password
+UserSchema.pre('save', async function (next) {
+  const user = this
+
+  // Only hash the password if it has been modified
+  if (!user.isModified('password')) return next()
+
+  // Validate password format
+  if (!PASSWORD_PATTERN.test(user.password)) {
+    const err = new Error(PASSWORD_ERROR_MESSAGE)
+    return next(err)
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(10)
+    user.password = await bcrypt.hash(user.password, salt)
+    next()
+  } catch (error) {
+    if (error instanceof Error) {
+      next(error)
+    } else {
+      next(new Error('An unknown error occurred while hashing the password'))
+    }
+  }
+})
+
+// Method to compare passwords
+UserSchema.methods.comparePassword = async function (
+  candidatePassword: string
+): Promise<boolean> {
+  return bcrypt.compare(candidatePassword, this.password)
+}
 
 const User = model<UserModelType>('User', UserSchema)
 

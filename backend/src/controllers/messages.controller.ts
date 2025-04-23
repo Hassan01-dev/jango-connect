@@ -1,8 +1,8 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import Message from '../models/Message'
 
 // Send Message
-const sendMessage = async (req: Request, res: Response) => {
+const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
   const { groupId, text } = req.body
   const { userId } = req
 
@@ -11,17 +11,17 @@ const sendMessage = async (req: Request, res: Response) => {
     await message.save()
 
     return res.status(201).json({ message })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
 // Delete Own Message
-const deleteMessage = async (req: Request, res: Response) => {
+const deleteMessage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { messageId } = req.params
   const { userId } = req
 
@@ -31,17 +31,13 @@ const deleteMessage = async (req: Request, res: Response) => {
 
     await Message.findByIdAndDelete(messageId)
     return res.status(200).json({ message: 'Message deleted' })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
 // Like a Message
-const likeMessage = async (req: Request, res: Response) => {
+const likeMessage = async (req: Request, res: Response, next: NextFunction) => {
   const { messageId } = req.params
   const { userId } = req
 
@@ -58,12 +54,8 @@ const likeMessage = async (req: Request, res: Response) => {
 
     await message.save()
     return res.status(200).json({ message })
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    return res
-      .status(500)
-      .json({ message: 'Server Error', error: errorMessage })
+  } catch (error) {
+    next(error)
   }
 }
 
