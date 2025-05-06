@@ -18,7 +18,7 @@ const createGroup = async (req: Request, res: Response, next: NextFunction) => {
       role: 'admin'
     }).save()
 
-    return res.status(201).json({ group })
+    res.status(201).json({ group })
   } catch (error) {
     next(error)
   }
@@ -31,7 +31,7 @@ const updateGroup = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     await Group.findByIdAndUpdate(groupId, { name, description })
-    return res.status(200).json({ message: 'Group updated successfully' })
+    res.status(200).json({ message: 'Group updated successfully' })
   } catch (error) {
     next(error)
   }
@@ -44,7 +44,7 @@ const deleteGroup = async (req: Request, res: Response, next: NextFunction) => {
   try {
     await Group.findByIdAndDelete(groupId)
     await GroupMember.deleteMany({ group: groupId })
-    return res.status(200).json({ message: 'Group deleted' })
+    res.status(200).json({ message: 'Group deleted' })
   } catch (error) {
     next(error)
   }

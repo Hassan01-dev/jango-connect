@@ -20,13 +20,13 @@ const run = async () => {
 
     console.log('Deleting Exisitng Data...');
     await Promise.all([
-      User.deleteMany({}),
-      Friend.deleteMany({}),
-      Post.deleteMany({}),
-      Comment.deleteMany({}),
-      Group.deleteMany({}),
-      GroupMember.deleteMany({}),
-      Message.deleteMany({})
+      User.deleteMany(),
+      Friend.deleteMany(),
+      Post.deleteMany(),
+      Comment.deleteMany(),
+      Group.deleteMany(),
+      GroupMember.deleteMany(),
+      Message.deleteMany()
     ]);
 
     console.log('Seeding Users...');

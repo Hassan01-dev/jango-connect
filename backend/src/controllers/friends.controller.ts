@@ -18,13 +18,15 @@ const sendFriendRequest = async (
   const currentUserid = req.userId
 
   if (!userId) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   if (userId == currentUserid) {
-    return res.status(400).json({
+    res.status(400).json({
       message: 'Invalid Request: You can not send request to yourself'
     })
+    return
   }
 
   try {
@@ -36,12 +38,13 @@ const sendFriendRequest = async (
     })) as FriendModelType | null
 
     if (existingRequest) {
-      return res.status(409).json({ message: 'Friend Request already exists' })
+      res.status(409).json({ message: 'Friend Request already exists' })
+      return
     }
 
     const friendRequest = new Friend({ user_1: currentUserid, user_2: userId })
     await friendRequest.save()
-    return res.status(200).json({ message: 'Friend Request sent' })
+    res.status(200).json({ message: 'Friend Request sent' })
   } catch (error) {
     next(error)
   }
@@ -56,7 +59,8 @@ const approveFriendRequest = async (
   const currentUserid = req.userId
 
   if (!friendRequestId) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
@@ -67,12 +71,11 @@ const approveFriendRequest = async (
     )) as FriendModelType | null
 
     if (!updatedFriend) {
-      return res.status(404).json({ message: 'Friend Request not found' })
+      res.status(404).json({ message: 'Friend Request not found' })
+      return
     }
 
-    return res
-      .status(200)
-      .json({ message: 'Friend Request Accepted Successfully' })
+    res.status(200).json({ message: 'Friend Request Accepted Successfully' })
   } catch (error) {
     next(error)
   }
@@ -87,7 +90,8 @@ const RemoveFriend = async (
   const currentUserId = req.userId
 
   if (!userId) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
@@ -99,12 +103,13 @@ const RemoveFriend = async (
     })
 
     if (!deletedFriend) {
-      return res
+      res
         .status(404)
         .json({ message: 'Friend request or friendship not found' })
+      return
     }
 
-    return res
+    res
       .status(200)
       .json({ message: 'Friend request or friendship removed successfully' })
   } catch (error) {
@@ -121,7 +126,8 @@ const rejectedFriendRequest = async (
   const currentUserid = req.userId
 
   if (!friendRequestId) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
@@ -132,12 +138,11 @@ const rejectedFriendRequest = async (
     )) as FriendModelType | null
 
     if (!updatedFriend) {
-      return res.status(404).json({ message: 'Friend Request not found' })
+      res.status(404).json({ message: 'Friend Request not found' })
+      return
     }
 
-    return res
-      .status(200)
-      .json({ message: 'Friend Request Rejected Successfully' })
+    res.status(200).json({ message: 'Friend Request Rejected Successfully' })
   } catch (error) {
     next(error)
   }
@@ -196,7 +201,7 @@ const getReceivedFriendRequests = async (
       createdAt: request.created_at
     }))
 
-    return res.status(200).json({
+    res.status(200).json({
       data: formattedRequests,
       pagination: {
         total,
@@ -263,7 +268,7 @@ const getNonFriendsList = async (
       profileImage: user.profileImage || ''
     }))
 
-    return res.status(200).json({
+    res.status(200).json({
       data: formattedUsers,
       pagination: {
         total,
@@ -327,7 +332,7 @@ const getFriendsList = async (
       profileImage: user.profileImage || ''
     }))
 
-    return res.status(200).json({
+    res.status(200).json({
       data: formattedFriends,
       pagination: {
         total,

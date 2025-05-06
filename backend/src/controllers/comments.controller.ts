@@ -16,13 +16,15 @@ const createComment = async (
   const user_id = req.userId
 
   if (!post_id || !content) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
     const post = await Post.findById(post_id)
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' })
+      res.status(404).json({ message: 'Post not found' })
+      return
     }
 
     post.comments_count += 1
@@ -31,9 +33,7 @@ const createComment = async (
     const comment = new Comment({ user_id, post_id, content })
     await comment.save()
 
-    return res
-      .status(201)
-      .json({ message: 'Comment added successfully', comment })
+    res.status(201).json({ message: 'Comment added successfully', comment })
   } catch (error) {
     next(error)
   }
@@ -48,7 +48,8 @@ const editComment = async (
   const user_id = req.userId
 
   if (!comment_id || !content) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
@@ -59,14 +60,11 @@ const editComment = async (
     )
 
     if (!comment) {
-      return res
-        .status(404)
-        .json({ message: 'Comment not found or not authorized' })
+      res.status(404).json({ message: 'Comment not found or not authorized' })
+      return
     }
 
-    return res
-      .status(200)
-      .json({ message: 'Comment updated successfully', comment })
+    res.status(200).json({ message: 'Comment updated successfully', comment })
   } catch (error) {
     next(error)
   }
@@ -81,16 +79,16 @@ const deleteComment = async (
   const user_id = req.userId
 
   if (!comment_id) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
     const comment = await Comment.findOne({ _id: comment_id, user_id })
 
     if (!comment) {
-      return res
-        .status(404)
-        .json({ message: 'Comment not found or not authorized' })
+      res.status(404).json({ message: 'Comment not found or not authorized' })
+      return
     }
 
     const post = await Post.findById(comment.post_id)
@@ -101,7 +99,7 @@ const deleteComment = async (
 
     await comment.deleteOne()
 
-    return res.status(200).json({ message: 'Comment deleted successfully' })
+    res.status(200).json({ message: 'Comment deleted successfully' })
   } catch (error) {
     next(error)
   }
@@ -118,7 +116,8 @@ const getCommentsByPost = async (
   const skip = (page - 1) * limit
 
   if (!post_id) {
-    return res.status(400).json({ message: 'Post ID is required' })
+    res.status(400).json({ message: 'Post ID is required' })
+    return
   }
 
   try {
@@ -130,7 +129,7 @@ const getCommentsByPost = async (
 
     const total_comments = await Comment.countDocuments({ post_id })
 
-    return res.status(200).json({
+    res.status(200).json({
       comments,
       pagination: {
         current_page: page,

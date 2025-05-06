@@ -8,7 +8,8 @@ const toggleLike = async (req: Request, res: Response, next: NextFunction) => {
   const user_id = req.userId
 
   if (!source_id || !source_type) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
@@ -28,7 +29,7 @@ const toggleLike = async (req: Request, res: Response, next: NextFunction) => {
         })
       }
 
-      return res.status(200).json({ message: 'Like removed successfully' })
+      res.status(200).json({ message: 'Like removed successfully' })
     } else {
       // Like: Create a new like entry
       const like = new Like({ user_id, source_id, source_type })
@@ -41,7 +42,7 @@ const toggleLike = async (req: Request, res: Response, next: NextFunction) => {
         await Comment.findByIdAndUpdate(source_id, { $inc: { likes_count: 1 } })
       }
 
-      return res.status(201).json({ message: 'Liked successfully', like })
+      res.status(201).json({ message: 'Liked successfully', like })
     }
   } catch (error) {
     next(error)
@@ -59,7 +60,8 @@ const getLikesBySource = async (
   const skip = (page - 1) * limit
 
   if (!source_id || !source_type) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
@@ -71,7 +73,7 @@ const getLikesBySource = async (
 
     const total_likes = await Like.countDocuments({ source_id, source_type })
 
-    return res.status(200).json({
+    res.status(200).json({
       likes,
       pagination: {
         current_page: page,

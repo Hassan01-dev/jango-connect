@@ -14,13 +14,15 @@ const addUserToGroup = async (
       group: groupId,
       user: userId
     })
-    if (existingMember)
-      return res.status(400).json({ message: 'User already in group' })
+    if (existingMember) {
+      res.status(400).json({ message: 'User already in group' })
+      return
+    }
 
     const member = new GroupMember({ group: groupId, user: userId, role })
     await member.save()
 
-    return res.status(200).json({ message: 'User added to group', member })
+    res.status(200).json({ message: 'User added to group', member })
   } catch (error) {
     next(error)
   }
@@ -36,7 +38,7 @@ const removeUserFromGroup = async (
 
   try {
     await GroupMember.findOneAndDelete({ group: groupId, user: userId })
-    return res.status(200).json({ message: 'User removed from group' })
+    res.status(200).json({ message: 'User removed from group' })
   } catch (error) {
     next(error)
   }

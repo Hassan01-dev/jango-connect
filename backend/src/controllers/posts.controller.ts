@@ -12,13 +12,14 @@ const createPost = async (
   const { content } = req.body
 
   if (!content) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
     let post = new Post({ user_id: currentUserid, content }) as PostModelType
     await post.save()
-    return res.status(200).json({
+    res.status(200).json({
       message: 'Post Created Sucessfully',
       post: { uuid: post.id, content }
     })
@@ -31,14 +32,15 @@ const getPost = async (req: GetPostType, res: Response, next: NextFunction) => {
   const { post_id } = req.params
 
   if (!post_id) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
     let post = (await Post.findOne({ _id: post_id })) as PostModelType
 
     if (post) {
-      return res.status(200).json({
+      res.status(200).json({
         post: {
           uuid: post.id,
           content: post.content,
@@ -63,7 +65,8 @@ const updatePost = async (
   const currentUserid = req.userId
 
   if (!post_id || !content) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
@@ -73,13 +76,14 @@ const updatePost = async (
     })) as PostModelType
 
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' })
+      res.status(404).json({ message: 'Post not found' })
+      return
     }
 
     post.content = content
     await post.save()
 
-    return res.status(200).json({
+    res.status(200).json({
       message: 'Post updated successfully',
       post: { uuid: post.id, content: post.content }
     })
@@ -97,7 +101,8 @@ const deletePost = async (
   const currentUserid = req.userId
 
   if (!post_id) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
@@ -107,12 +112,13 @@ const deletePost = async (
     })) as PostModelType
 
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' })
+      res.status(404).json({ message: 'Post not found' })
+      return
     }
 
     await Post.deleteOne({ _id: post_id })
 
-    return res.status(200).json({ message: 'Post deleted successfully' })
+    res.status(200).json({ message: 'Post deleted successfully' })
   } catch (error) {
     next(error)
   }

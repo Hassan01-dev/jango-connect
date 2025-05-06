@@ -10,7 +10,7 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
     const message = new Message({ group: groupId, user: userId, text })
     await message.save()
 
-    return res.status(201).json({ message })
+    res.status(201).json({ message })
   } catch (error) {
     next(error)
   }
@@ -27,10 +27,13 @@ const deleteMessage = async (
 
   try {
     const message = await Message.findOne({ _id: messageId, user: userId })
-    if (!message) return res.status(403).json({ message: 'Unauthorized' })
+    if (!message) {
+      res.status(403).json({ message: 'Unauthorized' })
+      return
+    }
 
     await Message.findByIdAndDelete(messageId)
-    return res.status(200).json({ message: 'Message deleted' })
+    res.status(200).json({ message: 'Message deleted' })
   } catch (error) {
     next(error)
   }
@@ -43,7 +46,10 @@ const likeMessage = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const message = await Message.findById(messageId)
-    if (!message) return res.status(404).json({ message: 'Message not found' })
+    if (!message) {
+      res.status(404).json({ message: 'Message not found' })
+      return
+    }
 
     const isLiked = message.likes.includes(userId)
     if (isLiked) {
@@ -53,7 +59,7 @@ const likeMessage = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     await message.save()
-    return res.status(200).json({ message })
+    res.status(200).json({ message })
   } catch (error) {
     next(error)
   }

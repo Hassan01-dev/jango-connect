@@ -11,9 +11,10 @@ const verifyToken = (
     const token = req.header('X-AUTH-TOKEN')
 
     if (!token) {
-      return res
+      res
         .status(401)
         .json({ msg: 'Missing X-AUTH-TOKEN, authorization denied' })
+      return
     }
 
     const secret_key = process.env.JWT_SECRET || ''

@@ -1,0 +1,47 @@
+name: jango-connect
+
+services:
+  mongo_db:
+    image: mongo
+    restart: unless-stopped
+    command: mongod --quiet
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - jango-connect
+    ports:
+      - 27018:27017
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - jango-connect
+    ports:
+      - 3001:3001
+    depends_on:
+      - mongo_db
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - jango-connect
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+volumes:
+  mongo_data:
+networks:
+  jango-connect:
+    driver: bridge

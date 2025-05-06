@@ -17,7 +17,7 @@ const getNotifications = async (
       .limit(limit)
       .skip((Number(page) - 1) * limit)
 
-    return res.status(200).json({ notifications })
+    res.status(200).json({ notifications })
   } catch (error) {
     next(error)
   }
@@ -29,7 +29,7 @@ const markAsRead = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     await Notification.findByIdAndUpdate(notificationId, { read: true })
-    return res.status(200).json({ message: 'Notification marked as read' })
+    res.status(200).json({ message: 'Notification marked as read' })
   } catch (error) {
     next(error)
   }
@@ -42,7 +42,8 @@ const createNotification = async (
   type: string,
   sourceId: string,
   sourceType: string,
-  message: string
+  message: string,
+  next: NextFunction
 ) => {
   try {
     const notification = new Notification({

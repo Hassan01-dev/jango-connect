@@ -18,13 +18,15 @@ const createUser = async (
   const { firstName, lastName, username, email, password } = req.body
 
   if (!firstName || !lastName || !username || !email || !password) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
     let user = (await User.findOne({ email })) as UserModelType | null
     if (user) {
-      return res.status(409).json({ message: 'User already exists' })
+      res.status(409).json({ message: 'User already exists' })
+      return
     }
 
     user = new User({
@@ -44,7 +46,7 @@ const createUser = async (
       expiresIn: '1h'
     })
 
-    return res.status(201).json({
+    res.status(201).json({
       message: 'User created successfully',
       user: { uuid: user.id, firstName, lastName, username, email },
       token
@@ -62,7 +64,8 @@ const login = async (
   const { identifier, password } = req.body
 
   if (!identifier || !password) {
-    return res.status(400).json({ message: 'Missing required fields' })
+    res.status(400).json({ message: 'Missing required fields' })
+    return
   }
 
   try {
@@ -71,12 +74,14 @@ const login = async (
     })
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' })
+      res.status(400).json({ message: 'Invalid credentials' })
+      return
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password)
     if (!isValidPassword) {
-      return res.status(400).json({ message: 'Invalid credentials' })
+      res.status(400).json({ message: 'Invalid credentials' })
+      return
     }
 
     const payload = { userId: user.id }
@@ -84,7 +89,7 @@ const login = async (
       expiresIn: '1h'
     })
 
-    return res.status(200).json({
+    res.status(200).json({
       message: 'Login successful',
       token,
       user: {
@@ -107,7 +112,7 @@ const currentUser = async (
 ) => {
   try {
     const user = await User.findById(req.userId).select('-__v -password')
-    return res.status(200).json(user)
+    res.status(200).json(user)
   } catch (error) {
     next(error)
   }

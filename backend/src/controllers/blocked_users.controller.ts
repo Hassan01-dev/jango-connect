@@ -7,7 +7,8 @@ const blockUser = async (req: Request, res: Response, next: NextFunction) => {
   const { blockedUserId } = req.body
 
   if (!blockedUserId) {
-    return res.status(400).json({ message: 'User to block is required' })
+    res.status(400).json({ message: 'User to block is required' })
+    return
   }
 
   try {
@@ -16,12 +17,13 @@ const blockUser = async (req: Request, res: Response, next: NextFunction) => {
       blocked: blockedUserId
     })
     if (existingBlock) {
-      return res.status(400).json({ message: 'User is already blocked' })
+      res.status(400).json({ message: 'User is already blocked' })
+      return
     }
 
     const block = new Block({ blocker: userId, blocked: blockedUserId })
     await block.save()
-    return res.status(200).json({ message: 'User blocked successfully' })
+    res.status(200).json({ message: 'User blocked successfully' })
   } catch (error) {
     next(error)
   }
@@ -33,12 +35,13 @@ const unblockUser = async (req: Request, res: Response, next: NextFunction) => {
   const { blockedUserId } = req.body
 
   if (!blockedUserId) {
-    return res.status(400).json({ message: 'User to unblock is required' })
+    res.status(400).json({ message: 'User to unblock is required' })
+    return
   }
 
   try {
     await Block.findOneAndDelete({ blocker: userId, blocked: blockedUserId })
-    return res.status(200).json({ message: 'User unblocked successfully' })
+    res.status(200).json({ message: 'User unblocked successfully' })
   } catch (error) {
     next(error)
   }
@@ -57,7 +60,7 @@ const getBlockedUsers = async (
       'blocked',
       'name email'
     )
-    return res.status(200).json({ blockedUsers })
+    res.status(200).json({ blockedUsers })
   } catch (error) {
     next(error)
   }
