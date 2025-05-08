@@ -1,56 +1,109 @@
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../store/authSlice';
-import { RootState, AppDispatch } from '../store';
-import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux"
+import { useNavigate, Link } from "react-router-dom"
+import { login } from "../store/authSlice"
+import { RootState, AppDispatch } from "../store"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card"
+
+const loginSchema = z.object({
+  identifier: z.string().min(1, "Email or username is required"),
+  password: z.string().min(1, "Password is required"),
+})
+
+type LoginValues = z.infer<typeof loginSchema>
 
 const Login = () => {
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const { isLoading, error } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
+  const { isLoading, error } = useSelector((state: RootState) => state.auth)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = await dispatch(login({ identifier, password }));
+  const form = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      identifier: "",
+      password: "",
+    },
+  })
+
+  const onSubmit = async (values: LoginValues) => {
+    const result = await dispatch(login(values))
     if (login.fulfilled.match(result)) {
-      navigate('/home');
+      navigate("/home")
     }
-  };
+  }
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email Or Username:</label>
-          <input 
-            type="text" 
-            value={identifier} 
-            onChange={(e) => setIdentifier(e.target.value)} 
-            required 
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-          />
-        </div>
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-      <p>
-        Don't have an account? <Link to="/signup">Sign up</Link>
-      </p>
-    </div>
-  );
-};
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md rounded-2xl shadow-md bg-card">
+        <CardHeader>
+          <CardTitle className="text-center text-3xl font-bold">Login</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {error && <p className="text-sm text-destructive text-center mb-4">{error}</p>}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="identifier"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email or Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your email or username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-export default Login;
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Enter your password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Login"}
+              </Button>
+            </form>
+          </Form>
+
+          <p className="text-sm text-center mt-4 text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link to="/signup" className="text-blue-600 hover:underlin">
+              Sign up
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default Login
