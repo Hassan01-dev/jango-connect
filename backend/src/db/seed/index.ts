@@ -94,20 +94,55 @@ const run = async () => {
     const posts = await Post.insertMany([
       {
         user_id: users[0]._id,
-        content: 'Just deployed my first backend API!',
-        media: []
+        content: 'Woke up to a beautiful view 🌄',
+        media: [
+          'https://picsum.photos/200/300',
+          'https://picsum.photos/300/200?grayscale'
+        ]
       },
       {
         user_id: users[1]._id,
-        content: 'Check out this cool animation!',
-        media: ['https://example.com/fun.gif']
+        content: 'Sometimes random photos speak louder than words.',
+        media: [
+          'https://picsum.photos/250/250',
+          'https://picsum.photos/seed/picsum/200/300',
+          'https://picsum.photos/300/300?grayscale',
+          'https://picsum.photos/280/200'
+        ]
       },
       {
         user_id: users[2]._id,
-        content: 'Learning MongoDB today 🔥',
-        media: []
+        content: 'A splash of grayscale art 🎨🖤',
+        media: [
+          'https://picsum.photos/220/300?grayscale'
+        ]
+      },
+      {
+        user_id: users[0]._id,
+        content: 'Sunset vibes hit different 🌇',
+        media: [
+          'https://picsum.photos/260/300',
+          'https://picsum.photos/200/280'
+        ]
+      },
+      {
+        user_id: users[1]._id,
+        content: 'Weekend dump 📷 #nofilter',
+        media: [
+          'https://picsum.photos/230/290',
+          'https://picsum.photos/280/310',
+          'https://picsum.photos/seed/picsum/210/300'
+        ]
+      },
+      {
+        user_id: users[2]._id,
+        content: 'Keeping it random and aesthetic.',
+        media: [
+          'https://picsum.photos/200/300?grayscale',
+          'https://picsum.photos/290/290'
+        ]
       }
-    ]);
+    ])     
 
     console.log('Seeding Comments...');
     await Comment.insertMany([

@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { PaginatedRequestParams, PaginatedResponse} from "@/types/pagination";
 import { FriendRequest, User } from "@/types/api"
 
-const API_URL = `${import.meta.env.VITE_API_URL}friends/`
+const API_URL = `${import.meta.env.VITE_API_URL}/friends/`
 
 export const friendRequestsApi = createApi({
   reducerPath: 'friendRequestsApi',

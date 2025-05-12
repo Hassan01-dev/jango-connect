@@ -16,15 +16,7 @@ const PostSchema = new Schema<PostModelType>(
       required: [true, 'Content is required'],
       maxLength: [500, 'Content must not exceed 500 characters']
     },
-    media: [
-      {
-        type: String,
-        match: [
-          /^(http|https):\/\/.+\.(jpg|jpeg|png|gif|mp4|mov|avi)$/,
-          'Invalid media URL format'
-        ]
-      }
-    ],
+    media: [{ type: String }],
     likes_count: { type: Number, default: 0 },
     comments_count: { type: Number, default: 0 }
   },

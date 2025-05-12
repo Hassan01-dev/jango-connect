@@ -4,9 +4,11 @@ import verifyToken from '../middleware/auth.middleware'
 
 const router = express.Router()
 
-const { createPost, getPost, updatePost, deletePost } = postController
+const { createPost, getPost, getPostsList, updatePost, deletePost } =
+  postController
 
 router.post('/', verifyToken, createPost)
+router.get('/list', verifyToken, getPostsList)
 router.get('/:post_id', verifyToken, getPost)
 router.patch('/:post_id', verifyToken, updatePost)
 router.delete('/:post_id', verifyToken, deletePost)

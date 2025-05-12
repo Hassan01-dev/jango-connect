@@ -25,7 +25,7 @@ api.interceptors.request.use(
 );
 
 export const login = createAsyncThunk(
-  'auth/login',
+  '/auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
       const response = await api.post<AuthResponse>('/login', credentials);
@@ -40,7 +40,7 @@ export const login = createAsyncThunk(
 );
 
 export const signup = createAsyncThunk(
-  'auth/signup',
+  '/auth/signup',
   async (credentials: SignupCredentials, { rejectWithValue }) => {
     try {
       const response = await api.post<AuthResponse>('/signup', credentials);
@@ -55,7 +55,7 @@ export const signup = createAsyncThunk(
 );
 
 export const loadUser = createAsyncThunk(
-  'auth/loadUser',
+  '/auth/loadUser',
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get<User>('/auth');
@@ -70,7 +70,7 @@ export const loadUser = createAsyncThunk(
 );
 
 export const logout = createAsyncThunk(
-  'auth/logout',
+  '/auth/logout',
   async () => {
     localStorage.removeItem('token');
     return null;

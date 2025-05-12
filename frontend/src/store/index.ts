@@ -3,14 +3,20 @@ import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import authReducer from './authSlice';
 import { friendRequestsApi } from './friendRequestsApi';
+import { postApi } from './postsApi';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    friendRequestsApi: friendRequestsApi.reducer,
+    [friendRequestsApi.reducerPath]: friendRequestsApi.reducer,
+    [postApi.reducerPath]: postApi.reducer,
+
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(friendRequestsApi.middleware),
+    getDefaultMiddleware().concat(
+      friendRequestsApi.middleware,
+      postApi.middleware
+    ),
   devTools: process.env.NODE_ENV !== 'production',
 });
 

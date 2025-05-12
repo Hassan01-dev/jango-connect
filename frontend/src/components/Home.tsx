@@ -1,5 +1,5 @@
 import FriendSection from './friends/FriendSection';
-import Posts from './Posts';
+import PostSection from './PostSection';
 import Chat from './Chat';
 import Navbar from './Navbar';
 
@@ -10,7 +10,7 @@ const Home = () => {
       <div className='grid grid-cols-4 gap-4'>
         <FriendSection />
         <div className='col-span-2'>
-          <Posts />
+          <PostSection />
         </div>
         <Chat />
       </div>
